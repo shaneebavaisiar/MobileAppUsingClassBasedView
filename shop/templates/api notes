@@ -1,0 +1,6 @@
+brand section:
+    # brandcreate and brandlist:shop/brandcreate
+    # brandedit:shop/brandedit/4
+    # branddelete:shop/branddelete/4
+status :completed
+==================================================================

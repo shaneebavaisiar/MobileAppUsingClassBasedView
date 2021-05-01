@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'shop/base.html' %}
+{% block body_block %}
+<h1>cart</h1>
+
+<table class="table">
+    <tr>
+        <th>image</th>
+        <th>user</th>
+        <th>product</th>
+    <th>price</th>
+        <th>delete</th>
+    </tr>
+    {% for item in items %}
+    <tr>
+        <td><img src="{{item.product.img.url}}" alt="" height="80px"></td>
+        <td>{{item.user}}</td>
+        <td>{{item.product.mobile_name}}</td>
+        <td>{{item.product.price}}</td>
+        <td><a href="{% url 'cartdelete' item.id %}">delete</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
