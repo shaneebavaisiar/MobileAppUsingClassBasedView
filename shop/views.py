@@ -5,7 +5,10 @@ from django.views.generic import TemplateView
 from .models import Brands,Mobile,Order,Cart
 from .forms import BrandForm,MobileForm,OrderForm,UserRegForm
 from django.contrib.auth import authenticate,login,logout
+from shop.decorators import admin_only
+from django.utils.decorators import method_decorator
 # ======================================Start Brand section========================================
+@method_decorator(admin_only,name='dispatch')
 class BrandCreate(TemplateView):
     model=Brands
     form_class=BrandForm
@@ -22,7 +25,7 @@ class BrandCreate(TemplateView):
         form=self.form_class(request.POST)
         form.save()
         return redirect('brandcreate')
-
+@method_decorator(admin_only,name='dispatch')
 class BrandEdit(TemplateView):
     model=Brands
     form_class=BrandForm
@@ -40,7 +43,7 @@ class BrandEdit(TemplateView):
         form=self.form_class(request.POST,instance=brand)
         form.save()
         return redirect('brandcreate')
-
+@method_decorator(admin_only,name='dispatch')
 class BrandDelete(TemplateView):
     model=Brands
     def get(self, request, *args, **kwargs):
@@ -51,7 +54,7 @@ class BrandDelete(TemplateView):
 # ======================================end brand section=============================================
 
 # ===============================================mobile section start=====================================
-
+@method_decorator(admin_only,name='dispatch')
 class MobileCreate(TemplateView):
     model=Mobile
     form_class=MobileForm
@@ -83,24 +86,29 @@ class MobileList(TemplateView):
 
 # =============================================mobile section end=========================================
 # user section
-def user_registration(request):
-    form=UserRegForm()
+class UserRegistration(TemplateView):
+    form_class=UserRegForm
+    template_name = 'shop/userreg.html'
     context={}
-    context['form']=form
-    if request.method=='POST':
-        form=UserRegForm(request.POST)
+    def get(self, request, *args, **kwargs):
+        form=self.form_class()
+        self.context['form']=form
+        return render(request,self.template_name,self.context)
+    def post(self,request,*args,**kwargs):
+        form=self.form_class(request.POST)
         if form.is_valid():
             form.save()
             return redirect('userlogin')
         else:
-            form=UserRegForm(request.POST)
-            context['form']=form
-            return render(request, 'shop/userreg.html', context)
+            self.context['form']=self.form_class()
+            return render(request, self.template_name, self.context)
 
-    return render(request,'shop/userreg.html',context)
 
-def user_login(request):
-    if request.method=='POST':
+class UserLogin(TemplateView):
+    template_name = 'shop/login.html'
+    def get(self, request, *args, **kwargs):
+        return render(request,self.template_name)
+    def post(self,request,*args,**kwargs):
         username=request.POST.get('uname')
         password=request.POST.get('pwd')
         user=authenticate(request,username=username,password=password)
@@ -108,14 +116,14 @@ def user_login(request):
             login(request,user)
             return redirect('mobilelist')
         else:
-            return render(request, 'shop/login.html')
+            return render(request,self.template_name)
+
+class UserLogout(TemplateView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return redirect('userlogin')
 
 
-    return render(request,'shop/login.html')
-
-def user_logout(request):
-    logout(request)
-    return redirect('userlogin')
 # end user section
 
 
@@ -178,9 +186,6 @@ class AddToCart(TemplateView):
         item.save()
         # self.context['item']=item
         return redirect('cartview')
-
-
-
 class Cartview(TemplateView):
     model=Cart
     template_name = 'shop/cart.html'
@@ -196,6 +201,8 @@ class CartDelete(TemplateView):
         item=self.model.objects.get(id=kwargs['pk'])
         item.delete()
         return redirect('cartview')
+
+# end cart section
 
 
 

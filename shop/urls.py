@@ -18,9 +18,11 @@ from django.urls import path
 from django.shortcuts import render
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import BrandCreate,BrandEdit,BrandDelete,MobileCreate,MobileList,OrderCreate,\
-    user_login,user_logout,user_registration,Orderlist,\
-    OrderCancel,OrderDetails,AddToCart,Cartview,CartDelete
+from .views import BrandCreate,BrandEdit,BrandDelete,\
+    MobileCreate,MobileList,OrderCreate,\
+    Orderlist,\
+    OrderCancel,OrderDetails,AddToCart,Cartview,CartDelete,\
+    UserRegistration,UserLogin,UserLogout
 
 
 urlpatterns = [
@@ -31,14 +33,15 @@ urlpatterns = [
     path('mobilecreate',MobileCreate.as_view(),name='mobilecreate'),
     path('mobilelist',MobileList.as_view(),name='mobilelist'),
     path('ordercreate/<int:id>',OrderCreate.as_view(),name='ordercreate'),
-    path('userregistration',user_registration,name='register'),
-    path('userlogin',user_login,name='userlogin'),
-    path('userlogout',user_logout,name='userlogout'),
+    path('userregistration',UserRegistration.as_view(),name='register'),
+    path('userlogin',UserLogin.as_view(),name='userlogin'),
+    path('userlogout',UserLogout.as_view(),name='userlogout'),
     path('orderlist',Orderlist.as_view(),name='orderlist'),
     path('ordercancel/<int:pk>',OrderCancel.as_view(),name='ordercancel'),
     path('orderdetails/<int:pk>',OrderDetails.as_view(),name='orderdetails'),
     path('addtocart/<int:id>',AddToCart.as_view(),name='addtocart'),
     path('cartview',Cartview.as_view(),name='cartview'),
-    path('cartdelete/<int:pk>',CartDelete.as_view(),name='cartdelete')
+    path('cartdelete/<int:pk>',CartDelete.as_view(),name='cartdelete'),
+    path('errorpage',lambda request:render(request,'shop/errorpage.html'),name='errorpage')
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
